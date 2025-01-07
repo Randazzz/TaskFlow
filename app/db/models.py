@@ -2,8 +2,8 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, String, func, mapped_column
-from sqlalchemy.orm import DeclarativeBase, Mapped, relationship
+from sqlalchemy import ForeignKey, String, func
+from sqlalchemy.orm import DeclarativeBase, Mapped, relationship, mapped_column
 
 
 class Base(DeclarativeBase):
