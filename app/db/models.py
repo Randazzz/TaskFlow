@@ -2,8 +2,9 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
+from pydantic import EmailStr
 from sqlalchemy import ForeignKey, String, func
-from sqlalchemy.orm import DeclarativeBase, Mapped, relationship, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
@@ -16,9 +17,9 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(30))
     full_name: Mapped[Optional[str]]
-    email: Mapped[str] = mapped_column(unique=True, nullable=False)
+    email: Mapped[EmailStr] = mapped_column(String(100), unique=True, nullable=False)
     age: Mapped[int]
-    hashed_password: Mapped[bytes]
+    hashed_password: Mapped[str]
     tasks: Mapped[List["Task"]] = relationship(back_populates="owner", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
