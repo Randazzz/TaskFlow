@@ -20,7 +20,9 @@ class User(Base):
     email: Mapped[EmailStr] = mapped_column(String(100), unique=True, nullable=False)
     age: Mapped[int]
     hashed_password: Mapped[str]
-    tasks: Mapped[List["Task"]] = relationship(back_populates="owner", cascade="all, delete-orphan")
+    tasks: Mapped[List["Task"]] = relationship(
+        back_populates="owner", cascade="all, delete-orphan"
+    )
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, username={self.username!r}), fullname={self.full_name!r})"
@@ -44,10 +46,14 @@ class RefreshToken(Base):
     __tablename__ = "refresh_tokens"
 
     uuid: Mapped[UUID] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
     refresh_token: Mapped[str] = mapped_column(nullable=False)
     expires_at: Mapped[datetime] = mapped_column(nullable=False)
-    created_at: Mapped[datetime] = mapped_column(nullable=False, server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        nullable=False, server_default=func.now()
+    )
     updated_at: Mapped[datetime] = mapped_column(nullable=False, onupdate=func.now())
 
     def __repr__(self) -> str:
