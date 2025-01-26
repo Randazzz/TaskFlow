@@ -12,7 +12,7 @@ def setup_logging():
         format="%(levelname)s (%(asctime)s): %(message)s (Line: %(lineno)d) [%(filename)s]",
         datefmt="%d/%m/%Y %I:%M:%S",
         encoding="utf-8",
-        filemode="w",
+        filemode="a",
         level=logging.WARNING,
     )
 
@@ -28,6 +28,12 @@ class Settings(BaseSettings):
     DATABASE_USER: str
     DATABASE_PASSWORD: str
     DATABASE_NAME: str
+
+    DATABASE_HOST_TEST: str
+    DATABASE_PORT_TEST: int
+    DATABASE_USER_TEST: str
+    DATABASE_PASSWORD_TEST: str
+    DATABASE_NAME_TEST: str
 
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"

@@ -13,7 +13,7 @@ class UserResponse(BaseModel):
 
 class UserCreate(BaseModel):
     username: str
-    full_name: str | None
+    full_name: str | None = None
     email: EmailStr
     age: int
     password: str

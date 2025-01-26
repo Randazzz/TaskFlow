@@ -1,7 +1,12 @@
 [tool.black]
-line-length = 88
+line-length = 88  # Настройки black
 exclude = '''
 /(
-    .*/migrations/.*
+  | venv
+  | migrations
 )/
 '''
+
+[tool.isort]
+profile = "black"
+skip = ["venv", "migrations", "__pycache__", ".git", ".pytest_cache"]
