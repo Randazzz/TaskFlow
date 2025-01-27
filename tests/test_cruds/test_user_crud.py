@@ -6,21 +6,19 @@ from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.schemas.user import UserCreate
+from app.api.schemas.user import UserCreate, UserResponse
 from app.db.crud import UserCRUD
 from app.db.models import User
 from tests.test_data import UserTestData
+from tests.utils import check_user
 
 
 @pytest.mark.asyncio
 async def test_create_user(test_session: AsyncSession) -> None:
-    test_user = UserCreate(**UserTestData.TEST_USER)
-    created_user = await UserCRUD.create_user(user=test_user, db=test_session)
+    test_user_data = UserCreate(**UserTestData.TEST_USER_DATA)
+    created_user = await UserCRUD.create_user(user=test_user_data, db=test_session)
 
-    assert created_user.username == test_user.username
-    assert created_user.full_name == test_user.full_name
-    assert created_user.email == test_user.email
-    assert created_user.age == test_user.age
+    assert isinstance(created_user, UserResponse)
 
     retrieved_user = await test_session.execute(
         select(User).where(User.username == created_user.username)  # type: ignore
@@ -29,13 +27,34 @@ async def test_create_user(test_session: AsyncSession) -> None:
     assert retrieved_user is not None
     assert retrieved_user.username == created_user.username
 
+    check_user(test_user_data, created_user)
+
+
+@pytest.mark.asyncio
+async def test_get_user_by_field(test_session: AsyncSession) -> None:
+    test_user_data = UserCreate(**UserTestData.TEST_USER_DATA)
+    created_user = await UserCRUD.create_user(user=test_user_data, db=test_session)
+
+    user_by_id = await UserCRUD.get_user_by_field(
+        field_value=created_user.id, field_name="id", db=test_session
+    )
+    user_by_email = await UserCRUD.get_user_by_field(
+        field_value=created_user.email, field_name="email", db=test_session
+    )
+
+    assert isinstance(user_by_id, UserResponse)
+    assert isinstance(user_by_email, UserResponse)
+
+    check_user(test_user_data, user_by_id)
+    check_user(test_user_data, user_by_email)
+
 
 @pytest.mark.asyncio
 async def test_create_user_duplicate_email(test_session: AsyncSession) -> None:
-    test_user = UserCreate(**UserTestData.TEST_USER)
+    test_user_data = UserCreate(**UserTestData.TEST_USER_DATA)
     duplicate_user_data = UserCreate(**UserTestData.DUPLICATE_USER_DATA)
 
-    await UserCRUD.create_user(test_user, test_session)
+    await UserCRUD.create_user(test_user_data, test_session)
 
     with pytest.raises(HTTPException) as exc_info:
         await UserCRUD.create_user(duplicate_user_data, test_session)
@@ -78,17 +97,30 @@ async def test_create_user_invalid_data(test_session: AsyncSession) -> None:
 async def test_create_user_db_error(
     test_session: AsyncSession, mocker: MockerFixture
 ) -> None:
-    user_data = UserCreate(**UserTestData.TEST_USER)
+    test_user_data = UserCreate(**UserTestData.TEST_USER_DATA)
 
     mocker.patch.object(test_session, "add", side_effect=SQLAlchemyError("DB Error"))
 
     with pytest.raises(HTTPException) as exc_info:
-        await UserCRUD.create_user(user_data, test_session)
+        await UserCRUD.create_user(test_user_data, test_session)
 
     assert exc_info.value.status_code == 500
     assert "An error occurred while processing the request" in exc_info.value.detail
 
     retrieved_user = await test_session.execute(
-        select(User).where(User.email == user_data.email)  # type: ignore
+        select(User).where(User.email == test_user_data.email)  # type: ignore
     )
     assert retrieved_user.scalar_one_or_none() is None
+
+
+@pytest.mark.asyncio
+async def test_get_user_by_field_not_found(test_session: AsyncSession) -> None:
+    user_by_id = await UserCRUD.get_user_by_field(
+        field_value=1, field_name="id", db=test_session
+    )
+    user_by_email = await UserCRUD.get_user_by_field(
+        field_value="user@example.com", field_name="email", db=test_session
+    )
+
+    assert user_by_id is None
+    assert user_by_email is None

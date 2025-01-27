@@ -1,5 +1,5 @@
 class UserTestData:
-    TEST_USER = {
+    TEST_USER_DATA = {
         "username": "test_user",
         "full_name": "fullname",
         "email": "user1@example.com",

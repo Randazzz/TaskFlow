@@ -2,9 +2,11 @@ import logging
 from typing import AsyncGenerator
 
 import pytest
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.core.config import settings
+from app.api.schemas.user import UserResponse
+from app.core.config import settings, setup_logging
+from app.db.crud import UserCRUD
 from app.db.models import Base
 
 DATABASE_URL_TEST: str = (
@@ -18,21 +20,32 @@ async_session_test = async_sessionmaker(bind=engine_test, expire_on_commit=False
 
 
 @pytest.fixture(scope="function")
-async def test_session() -> AsyncGenerator[AsyncSession, None]:
+async def setup_test_db() -> AsyncGenerator[None, None]:
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    try:
+        yield
+    finally:
+        async with engine_test.begin() as conn:
+            await conn.run_sync(Base.metadata.drop_all)
+        await engine_test.dispose()
 
+
+@pytest.fixture(scope="function")
+async def test_session(setup_test_db: None) -> AsyncGenerator[AsyncSession, None]:
     async with async_session_test() as session:
         yield session
-
-    async with engine_test.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-
-    await engine_test.dispose()
 
 
 @pytest.fixture(scope="session", autouse=True)
 def disable_logging() -> None:
+    logger = logging.getLogger()
+
+    for handler in logger.handlers:
+        if isinstance(handler, logging.FileHandler):
+            logger.removeHandler(handler)
+
     logging.disable(logging.CRITICAL)
     yield
     logging.disable(logging.NOTSET)
+    setup_logging()

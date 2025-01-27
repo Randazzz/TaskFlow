@@ -84,7 +84,7 @@ class UserCRUD:
 
     @staticmethod
     async def get_user_by_email(
-        user_email: int, db: AsyncSession
+        user_email: EmailStr, db: AsyncSession
     ) -> UserResponse | None:
         return await UserCRUD.get_user_by_field(user_email, "email", db)
 
