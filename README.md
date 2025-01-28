@@ -6,32 +6,7 @@ API разработано с использованием FastAPI и предн
 ## Настройка окружения
 
 Перед запуском проекта необходимо установить зависимости `pip install -r requirements.txt`,
-настроить переменные окружения в файле `.env`. Пример содержимого файла:
-
-```ini
-DEBUG=True
-
-DATABASE_HOST=localhost
-DATABASE_PORT=5432
-DATABASE_USER=your_user
-DATABASE_PASSWORD=your_password
-DATABASE_NAME=your_db_name
-
-DATABASE_HOST_TEST=localhost
-DATABASE_PORT_TEST=5432
-DATABASE_USER_TEST=your_user_test
-DATABASE_PASSWORD_TEST=your_password_test
-DATABASE_NAME_TEST=your_db_name_test
-
-JWT_SECRET_KEY=your_secret_key
-JWT_ALGORITHM=HS256
-JWT_ACCESS_TOKEN_EXPIRE_MINUTES=60
-```
-*Описание переменных:*
-
-- **DEBUG**: Режим отладки, включен в режиме разработки.  
-- **DATABASE_***: Параметры для подключения к основной и тестовой базам данных PostgreSQL.  
-- **JWT_***: Настройки для JWT аутентификации (секретный ключ, алгоритм и время жизни токена).  
+настроить переменные окружения в файле `.env`. Пример файла находится в .env.example
 
 ## Создание базы данных
 ### Обычная база данных

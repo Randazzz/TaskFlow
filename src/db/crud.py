@@ -6,8 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from app.api.schemas.user import UserCreate, UserResponse
-from app.db.models import User
+from src.db.models import User
+from src.modules.users.schemas.user import UserCreate, UserResponse
 
 logger = logging.getLogger(__name__)
 

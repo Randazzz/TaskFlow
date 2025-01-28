@@ -1,4 +1,4 @@
-from app.api.schemas.user import UserCreate, UserResponse
+from src.modules.users.schemas.user import UserCreate, UserResponse
 
 
 def check_user(expected_user: UserCreate, actual_user: UserResponse) -> None:

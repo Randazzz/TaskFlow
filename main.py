@@ -1,8 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
 
-from app.api.endpoints import users
-from app.core.config import setup_logging
+from src.core.config import setup_logging
+from src.modules.users.endpoints import users
 
 setup_logging()
 

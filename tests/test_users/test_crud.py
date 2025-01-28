@@ -6,9 +6,9 @@ from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.schemas.user import UserCreate, UserResponse
-from app.db.crud import UserCRUD
-from app.db.models import User
+from src.db.crud import UserCRUD
+from src.db.models import User
+from src.modules.users.schemas.user import UserCreate, UserResponse
 from tests.test_data import UserTestData
 from tests.utils import check_user
 

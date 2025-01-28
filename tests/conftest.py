@@ -4,10 +4,9 @@ from typing import AsyncGenerator
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.api.schemas.user import UserResponse
-from app.core.config import settings, setup_logging
-from app.db.crud import UserCRUD
-from app.db.models import Base
+from src.core.config import settings, setup_logging
+from src.db.models import Base
+from src.modules.users.schemas.user import UserResponse
 
 DATABASE_URL_TEST: str = (
     f"postgresql+asyncpg://{settings.DATABASE_USER_TEST}:"
